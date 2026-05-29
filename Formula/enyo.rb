@@ -9,10 +9,6 @@ class Enyo < Formula
       url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
       sha256 "0000000000000000000000000000000000000000000000000000000000000000"
     end
-    on_intel do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-x86_64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
-    end
   end
 
   on_linux do

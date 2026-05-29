@@ -39,7 +39,7 @@ jobs:
         run: |
           BASE_URL="https://github.com/virzz/enyo-rs/releases/download/v${VERSION}"
 
-          for asset in darwin-aarch64 darwin-x86_64 linux-aarch64 linux-x86_64; do
+          for asset in darwin-aarch64 linux-aarch64 linux-x86_64; do
             archive="enyo-${asset}.tar.gz"
             curl --fail --location --silent --show-error --retry 5 --retry-delay 10 \
               --output "${archive}" "${BASE_URL}/${archive}"
@@ -52,7 +52,6 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
           SHA256_DARWIN_AARCH64: ${{ steps.sha256.outputs.sha256_darwin_aarch64 }}
-          SHA256_DARWIN_X86_64: ${{ steps.sha256.outputs.sha256_darwin_x86_64 }}
           SHA256_LINUX_AARCH64: ${{ steps.sha256.outputs.sha256_linux_aarch64 }}
           SHA256_LINUX_X86_64: ${{ steps.sha256.outputs.sha256_linux_x86_64 }}
         run: |
@@ -61,7 +60,6 @@ jobs:
           formula = template.sub(/version "[^"]+"/, %(version "#{ENV.fetch("VERSION")}"))
           sha256_values = %w[
             SHA256_DARWIN_AARCH64
-            SHA256_DARWIN_X86_64
             SHA256_LINUX_AARCH64
             SHA256_LINUX_X86_64
           ].map { |key| %(sha256 "#{ENV.fetch(key)}") }
@@ -86,7 +84,6 @@ jobs:
 
             **SHA256 checksums:**
             - darwin-aarch64: `${{ steps.sha256.outputs.sha256_darwin_aarch64 }}`
-            - darwin-x86_64: `${{ steps.sha256.outputs.sha256_darwin_x86_64 }}`
             - linux-aarch64: `${{ steps.sha256.outputs.sha256_linux_aarch64 }}`
             - linux-x86_64: `${{ steps.sha256.outputs.sha256_linux_x86_64 }}`
           branch: update-enyo-${{ steps.version.outputs.version }}
