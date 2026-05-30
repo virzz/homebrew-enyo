@@ -1,13 +1,13 @@
 class Enyo < Formula
   desc "The Cyber Swiss Army Knife for terminal"
   homepage "https://github.com/virzz/enyo-rs"
-  version "0.1.0"
+  version "0.1.2"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+      sha256 "91868f93fd8aa9664d01e4f204d846e40e79bc121ecef010161838c800a331dc"
     end
   end
 
