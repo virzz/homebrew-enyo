@@ -1,8 +1,13 @@
 class Enyo < Formula
-  desc "The Cyber Swiss Army Knife for terminal"
+  desc "Cyber Swiss Army Knife for terminal"
   homepage "https://github.com/virzz/enyo-rs"
   version "0.1.0"
   license "MIT"
+
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
 
   on_macos do
     on_arm do
@@ -22,24 +27,12 @@ class Enyo < Formula
     end
   end
 
-  livecheck do
-    url :stable
-    strategy :github_latest
-  end
-
   def install
     bin.install "enyo"
 
-    # Install shell completions if available
-    if File.exist?("completions/enyo.bash")
-      bash_completion.install "completions/enyo.bash" => "enyo"
-    end
-    if File.exist?("completions/enyo.zsh")
-      zsh_completion.install "completions/enyo.zsh" => "_enyo"
-    end
-    if File.exist?("completions/enyo.fish")
-      fish_completion.install "completions/enyo.fish"
-    end
+    bash_completion.install "completions/enyo.bash" => "enyo" if File.exist?("completions/enyo.bash")
+    zsh_completion.install "completions/enyo.zsh" => "_enyo" if File.exist?("completions/enyo.zsh")
+    fish_completion.install "completions/enyo.fish" if File.exist?("completions/enyo.fish")
   end
 
   test do
