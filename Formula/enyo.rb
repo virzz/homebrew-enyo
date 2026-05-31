@@ -9,24 +9,17 @@ class Enyo < Formula
     strategy :github_latest
   end
 
-  on_macos do
+  if OS.mac?
     depends_on arch: :arm64
 
-    on_arm do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
-    end
-  end
-
-  on_linux do
-    on_arm do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-aarch64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
-    end
-    on_intel do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-x86_64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
-    end
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
+    sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  elsif OS.linux? && Hardware::CPU.arm?
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-aarch64.tar.gz"
+    sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  elsif OS.linux? && Hardware::CPU.intel?
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-x86_64.tar.gz"
+    sha256 "0000000000000000000000000000000000000000000000000000000000000000"
   end
 
   def install
