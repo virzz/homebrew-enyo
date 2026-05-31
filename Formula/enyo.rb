@@ -9,24 +9,17 @@ class Enyo < Formula
     strategy :github_latest
   end
 
-  on_macos do
+  if OS.mac?
     depends_on arch: :arm64
 
-    on_arm do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
-      sha256 "f4e85554bc71a0ddc55368034c877b80ddf88dea959abb083a3a0871db3e6c21"
-    end
-  end
-
-  on_linux do
-    on_arm do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-aarch64.tar.gz"
-      sha256 "689ec1e6d8746e29729e2a60e77c798c25ada39856abba82fbff8d76c0661600"
-    end
-    on_intel do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-x86_64.tar.gz"
-      sha256 "91868f93fd8aa9664d01e4f204d846e40e79bc121ecef010161838c800a331dc"
-    end
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
+    sha256 "f4e85554bc71a0ddc55368034c877b80ddf88dea959abb083a3a0871db3e6c21"
+  elsif OS.linux? && Hardware::CPU.arm?
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-aarch64.tar.gz"
+    sha256 "689ec1e6d8746e29729e2a60e77c798c25ada39856abba82fbff8d76c0661600"
+  elsif OS.linux? && Hardware::CPU.intel?
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-x86_64.tar.gz"
+    sha256 "91868f93fd8aa9664d01e4f204d846e40e79bc121ecef010161838c800a331dc"
   end
 
   def install
