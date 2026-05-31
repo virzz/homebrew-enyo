@@ -30,7 +30,7 @@ jobs:
             VERSION="${{ inputs.version }}"
           fi
           VERSION="${VERSION#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Download release assets and calculate SHA256
         id: sha256

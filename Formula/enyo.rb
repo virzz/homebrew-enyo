@@ -10,10 +10,10 @@ class Enyo < Formula
   end
 
   on_macos do
-    on_arm do
-      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
-      sha256 "0000000000000000000000000000000000000000000000000000000000000000"
-    end
+    depends_on arch: :arm64
+
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
+    sha256 "0000000000000000000000000000000000000000000000000000000000000000"
   end
 
   on_linux do
