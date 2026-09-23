@@ -1,7 +1,7 @@
 class Enyo < Formula
   desc "Cyber Swiss Army Knife for terminal"
   homepage "https://github.com/virzz/enyo-rs"
-  version "0.1.2"
+  version "0.1.3"
   license "MIT"
 
   livecheck do
@@ -9,17 +9,23 @@ class Enyo < Formula
     strategy :github_latest
   end
 
-  if OS.mac?
-    depends_on arch: :arm64
+  on_macos do
+    on_arm do
+      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-arm64.tar.gz"
+      sha256 "1d4d2981950cc59e3b500681f484eeec339fdf920ae053111d5e0289ccd08c58"
+    end
 
-    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-aarch64.tar.gz"
-    sha256 "f4e85554bc71a0ddc55368034c877b80ddf88dea959abb083a3a0871db3e6c21"
-  elsif OS.linux? && Hardware::CPU.arm?
-    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-aarch64.tar.gz"
-    sha256 "689ec1e6d8746e29729e2a60e77c798c25ada39856abba82fbff8d76c0661600"
-  elsif OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-x86_64.tar.gz"
-    sha256 "91868f93fd8aa9664d01e4f204d846e40e79bc121ecef010161838c800a331dc"
+    on_intel do
+      url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-darwin-amd64.tar.gz"
+      sha256 "eb416239aefd7118b2fa1cd191f6f52be18554a6f37f1bd901562419ab16b86b"
+    end
+  end
+
+  on_linux do
+    depends_on arch: :x86_64
+
+    url "https://github.com/virzz/enyo-rs/releases/download/v#{version}/enyo-linux-amd64.tar.gz"
+    sha256 "8172d4d198d76ef0506afff5a4b388d4e506d5f9b6643b649ec02fdbc24fa52f"
   end
 
   def install
