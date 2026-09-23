@@ -3,8 +3,12 @@ name: Update Formula
 on:
   workflow_dispatch:
     inputs:
+      formula:
+        description: "Formula name"
+        required: true
+        type: string
       version:
-        description: "New version (without v prefix, e.g., 0.1.0)"
+        description: "Release version"
         required: true
         type: string
   repository_dispatch:
@@ -15,74 +19,47 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
-      actions: write
       pull-requests: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      - name: Set version
-        id: version
-        run: |
-          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            VERSION="${{ github.event.client_payload.version }}"
-          else
-            VERSION="${{ inputs.version }}"
-          fi
-          VERSION="${VERSION#v}"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Download release assets and calculate SHA256
-        id: sha256
+      - name: Resolve formula and release
+        id: release
         env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          BASE_URL="https://github.com/virzz/enyo-rs/releases/download/v${VERSION}"
+          FORMULA: ${{ github.event_name == 'workflow_dispatch' && inputs.formula || github.event.client_payload.formula }}
+          VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.event.client_payload.version }}
+        run: ruby .github/scripts/update-formula.rb resolve >> "$GITHUB_OUTPUT"
 
-          for asset in darwin-arm64 darwin-amd64 linux-amd64; do
-            archive="enyo-${asset}.tar.gz"
-            curl --fail --location --silent --show-error --retry 5 --retry-delay 10 \
-              --output "${archive}" "${BASE_URL}/${archive}"
-            sha=$(sha256sum "${archive}" | cut -d' ' -f1)
-            echo "sha256_${asset//-/_}=${sha}" >> "$GITHUB_OUTPUT"
-            rm -f "${archive}"
-          done
-
-      - name: Render Formula
+      - name: Download release assets
         env:
-          VERSION: ${{ steps.version.outputs.version }}
-          SHA256_DARWIN_ARM64: ${{ steps.sha256.outputs.sha256_darwin_arm64 }}
-          SHA256_DARWIN_AMD64: ${{ steps.sha256.outputs.sha256_darwin_amd64 }}
-          SHA256_LINUX_AMD64: ${{ steps.sha256.outputs.sha256_linux_amd64 }}
+          GH_TOKEN: ${{ github.token }}
+          FORMULA: ${{ steps.release.outputs.formula }}
+          REPOSITORY: ${{ steps.release.outputs.repository }}
+          VERSION: ${{ steps.release.outputs.version }}
         run: |
-          ruby <<'RUBY'
-          template = File.read("Formula/enyo.rb")
-          formula = template.sub(/version "[^"]+"/, %(version "#{ENV.fetch("VERSION")}"))
-          %w[darwin-arm64 darwin-amd64 linux-amd64].each do |asset|
-            key = "SHA256_#{asset.upcase.tr('-', '_')}"
-            pattern = /(url "[^"]*\/enyo-#{asset}\.tar\.gz"\s+sha256 ")[0-9a-f]{64}(\")/
-            raise "Expected one checksum for #{asset}" unless formula.scan(pattern).length == 1
+          mkdir -p assets
+          gh release download "v${VERSION}" --repo "$REPOSITORY" \
+            --pattern "${FORMULA}-*.tar.gz" --dir assets
 
-            formula = formula.sub(pattern) { "#{$1}#{ENV.fetch(key)}#{$2}" }
-          end
-          File.write("Formula/enyo.rb", formula)
-          RUBY
+      - name: Update formula
+        env:
+          FORMULA: ${{ steps.release.outputs.formula }}
+          REPOSITORY: ${{ steps.release.outputs.repository }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: ruby .github/scripts/update-formula.rb render
 
-      - name: Validate Formula
-        run: ruby -c Formula/enyo.rb
+      - name: Validate formula
+        env:
+          FORMULA: ${{ steps.release.outputs.formula }}
+        run: ruby -c "Formula/${FORMULA}.rb"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          commit-message: "enyo: update to v${{ steps.version.outputs.version }}"
-          title: "enyo: update to v${{ steps.version.outputs.version }}"
-          body: |
-            Updates enyo formula to version ${{ steps.version.outputs.version }}
-
-            **SHA256 checksums:**
-            - darwin-arm64: `${{ steps.sha256.outputs.sha256_darwin_arm64 }}`
-            - darwin-amd64: `${{ steps.sha256.outputs.sha256_darwin_amd64 }}`
-            - linux-amd64: `${{ steps.sha256.outputs.sha256_linux_amd64 }}`
-          branch: update-enyo-${{ steps.version.outputs.version }}
+          add-paths: Formula/${{ steps.release.outputs.formula }}.rb
+          commit-message: "${{ steps.release.outputs.formula }}: update to v${{ steps.release.outputs.version }}"
+          title: "${{ steps.release.outputs.formula }}: update to v${{ steps.release.outputs.version }}"
+          body: "Updates ${{ steps.release.outputs.formula }} formula to version ${{ steps.release.outputs.version }}."
+          branch: update-${{ steps.release.outputs.formula }}-${{ steps.release.outputs.version }}
           delete-branch: true
