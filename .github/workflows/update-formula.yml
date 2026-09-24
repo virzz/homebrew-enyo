@@ -22,6 +22,8 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Resolve formula and release
         id: release
@@ -56,7 +58,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          token: ${{ github.token }}
           add-paths: Formula/${{ steps.release.outputs.formula }}.rb
           commit-message: "${{ steps.release.outputs.formula }}: update to v${{ steps.release.outputs.version }}"
           title: "${{ steps.release.outputs.formula }}: update to v${{ steps.release.outputs.version }}"
