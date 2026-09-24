@@ -4,6 +4,30 @@
 
 A Rust-based terminal toolkit providing various CLI utilities including encoding/decoding, hash calculation, JWT handling, network tools, and more.
 
+## Available Formulae
+
+<!-- BEGIN FORMULAE -->
+### `enyo`
+
+Cyber Swiss Army Knife for terminal
+
+```bash
+brew install virzz/enyo/enyo
+```
+
+[Homepage](https://github.com/virzz/enyo-rs)
+
+### `llmapi`
+
+Multi-provider LLM API protocol conversion proxy
+
+```bash
+brew install virzz/enyo/llmapi
+```
+
+[Homepage](https://github.com/virzz/llmapi-rs)
+<!-- END FORMULAE -->
+
 ## Installation
 
 ```bash
