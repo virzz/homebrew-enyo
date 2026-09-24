@@ -4,10 +4,13 @@ on:
   pull_request_target:
     types:
       - labeled
+  workflow_run:
+    workflows: ["brew test-bot"]
+    types: [completed]
 
 jobs:
   pr-pull:
-    if: contains(github.event.pull_request.labels.*.name, 'pr-pull')
+    if: github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'pr-pull')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -52,3 +55,37 @@ jobs:
         env:
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: git push --delete origin "$BRANCH"
+
+  auto-merge:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Approve and squash merge formula PR
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          HEAD_REF: ${{ github.event.workflow_run.head_branch }}
+          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          case "$HEAD_REF" in
+            update-*) ;;
+            *) exit 0 ;;
+          esac
+
+          PR_NUMBER=$(gh pr list --repo "$REPOSITORY" --head "$HEAD_REF" \
+            --state open --json number,headRepository,headRefOid \
+            --jq '.[] | select(.headRepository.nameWithOwner == env.REPOSITORY) | select(.headRefOid == env.RUN_HEAD_SHA) | .number')
+          if [ -z "$PR_NUMBER" ]; then
+            exit 0
+          fi
+
+          STATE=$(gh pr view "$PR_NUMBER" --repo "$REPOSITORY" --json state --jq .state)
+          test "$STATE" = OPEN
+
+          gh pr review "$PR_NUMBER" --repo "$REPOSITORY" \
+            --approve --body "Automated approval: brew test-bot passed."
+          gh pr merge "$PR_NUMBER" --repo "$REPOSITORY" \
+            --squash --delete-branch
