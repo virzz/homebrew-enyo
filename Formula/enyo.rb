@@ -23,7 +23,7 @@ class Enyo < Formula
   def install
     bin.install "enyo"
 
-    generate_completions_from_executable(bin/"enyo", "completion", shells: [:bash, :zsh, :fish])
+    generate_completions_from_executable(bin/"enyo", "completion")
   end
 
   test do
