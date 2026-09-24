@@ -57,7 +57,7 @@ jobs:
         run: git push --delete origin "$BRANCH"
 
   auto-merge:
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -65,7 +65,7 @@ jobs:
     steps:
       - name: Approve and squash merge formula PR
         env:
-          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
           HEAD_REF: ${{ github.event.workflow_run.head_branch }}
           RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
@@ -85,7 +85,10 @@ jobs:
           STATE=$(gh pr view "$PR_NUMBER" --repo "$REPOSITORY" --json state --jq .state)
           test "$STATE" = OPEN
 
-          gh pr review "$PR_NUMBER" --repo "$REPOSITORY" \
-            --approve --body "Automated approval: brew test-bot passed."
+          AUTHOR=$(gh pr view "$PR_NUMBER" --repo "$REPOSITORY" --json author --jq '.author.login')
+          if [ "$AUTHOR" != 'app/github-actions' ] && [ "$AUTHOR" != 'github-actions[bot]' ]; then
+            gh pr review "$PR_NUMBER" --repo "$REPOSITORY" \
+              --approve --body "Automated approval: brew test-bot passed."
+          fi
           gh pr merge "$PR_NUMBER" --repo "$REPOSITORY" \
             --squash --delete-branch
