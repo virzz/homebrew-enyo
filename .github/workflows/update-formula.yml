@@ -60,8 +60,9 @@ jobs:
         with:
           token: ${{ github.token }}
           add-paths: Formula/${{ steps.release.outputs.formula }}.rb
-          commit-message: "${{ steps.release.outputs.formula }}: update to v${{ steps.release.outputs.version }}"
+          commit-message: "✨ feat(${{ steps.release.outputs.formula }}): update to v${{ steps.release.outputs.version }}"
           title: "${{ steps.release.outputs.formula }}: update to v${{ steps.release.outputs.version }}"
-          body: "Updates ${{ steps.release.outputs.formula }} formula to version ${{ steps.release.outputs.version }}."
+          body: |+
+            Updates ${{ steps.release.outputs.formula }} formula to version ${{ steps.release.outputs.version }}.
           branch: update-${{ steps.release.outputs.formula }}-${{ steps.release.outputs.version }}
           delete-branch: true
