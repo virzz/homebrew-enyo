@@ -17,16 +17,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
-          HEAD_REPOSITORY: ${{ github.event.workflow_run.pull_requests[0].head.repository.full_name }}
-          HEAD_REF: ${{ github.event.workflow_run.pull_requests[0].head.ref }}
+          HEAD_REF: ${{ github.event.workflow_run.head_branch }}
+          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          test -n "$PR_NUMBER"
-          test "$HEAD_REPOSITORY" = "$REPOSITORY"
           case "$HEAD_REF" in
             update-*) ;;
             *) exit 0 ;;
           esac
+
+          PR_NUMBER=$(gh pr list --repo "$REPOSITORY" --head "$HEAD_REF" \
+            --state open --json number,headRepository,headRefOid \
+            --jq '.[] | select(.headRepository.nameWithOwner == env.REPOSITORY) | select(.headRefOid == env.RUN_HEAD_SHA) | .number')
+          test -n "$PR_NUMBER"
 
           STATE=$(gh pr view "$PR_NUMBER" --repo "$REPOSITORY" --json state --jq .state)
           test "$STATE" = OPEN
