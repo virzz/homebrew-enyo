@@ -23,9 +23,7 @@ class Enyo < Formula
   def install
     bin.install "enyo"
 
-    bash_completion.install "completions/enyo.bash" => "enyo" if File.exist?("completions/enyo.bash")
-    zsh_completion.install "completions/enyo.zsh" => "_enyo" if File.exist?("completions/enyo.zsh")
-    fish_completion.install "completions/enyo.fish" if File.exist?("completions/enyo.fish")
+    generate_completions_from_executable(bin/"enyo", "completion", shells: [:bash, :zsh, :fish])
   end
 
   test do
