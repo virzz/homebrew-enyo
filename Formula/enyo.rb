@@ -23,6 +23,10 @@ class Enyo < Formula
   on_linux do
     depends_on arch: :x86_64
 
+    on_arm do
+      disable! "only x86_64 Linux binaries are published"
+    end
+
     on_intel do
       url "https://github.com/virzz/enyo-rs/releases/download/v0.1.3/enyo-linux-amd64.tar.gz"
       sha256 "8172d4d198d76ef0506afff5a4b388d4e506d5f9b6643b649ec02fdbc24fa52f"

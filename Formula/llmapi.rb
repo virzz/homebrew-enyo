@@ -23,6 +23,10 @@ class Llmapi < Formula
   on_linux do
     depends_on arch: :x86_64
 
+    on_arm do
+      disable! "only x86_64 Linux binaries are published"
+    end
+
     on_intel do
       url "https://github.com/virzz/llmapi-rs/releases/download/v0.1.1/llmapi-linux-amd64.tar.gz"
       sha256 "2bcc47915aca50be6fd655ee5e3449f619da5481110d193a2c9dc6e5542872fb"
