@@ -1,6 +1,6 @@
 class Llmapi < Formula
   desc "Multi-provider LLM API protocol conversion proxy"
-  homepage "https://github.com/llmapi-rs"
+  homepage "https://github.com/virzz/llmapi-rs"
   license "MIT"
 
   livecheck do
