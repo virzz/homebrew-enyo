@@ -9,15 +9,15 @@ class Llmapi < Formula
   end
 
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/virzz/llmapi-rs/releases/download/v0.1.4/llmapi-darwin-arm64.tar.gz"
-    sha256 "cd6460ca1de634d2804f2511919dbbdad7d184a611218f993c4bed856b9fe330"
+    url "https://github.com/virzz/llmapi-rs/releases/download/v0.1.5/llmapi-darwin-arm64.tar.gz"
+    sha256 "c17579a1ce085ac9b97df4edaa4d032384dc3718443981a50abbbfb0b842a98b"
   elsif OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/virzz/llmapi-rs/releases/download/v0.1.4/llmapi-darwin-amd64.tar.gz"
-    sha256 "b06a6315644ac2e982ded7f250edb76b0e56e8af446b78d5aacf4da3580a3023"
+    url "https://github.com/virzz/llmapi-rs/releases/download/v0.1.5/llmapi-darwin-amd64.tar.gz"
+    sha256 "10e55ca4fc0a7371f4c4de5364c44915758e633439de84e86d7f90a4e8eec40d"
   elsif OS.linux?
     depends_on arch: :x86_64
-    url "https://github.com/virzz/llmapi-rs/releases/download/v0.1.4/llmapi-linux-amd64.tar.gz"
-    sha256 "862340c54d2ec9e57d1cf009d6f6981631de125896d60d5dcbaa797c0e5649dc"
+    url "https://github.com/virzz/llmapi-rs/releases/download/v0.1.5/llmapi-linux-amd64.tar.gz"
+    sha256 "631eece53826a6c1b75be68dd4797509bd306a722a7e4440c92bc613995cfd17"
   end
 
   def install
