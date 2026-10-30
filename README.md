@@ -27,12 +27,12 @@ brew install virzz/enyo/llmapi
 
 [Homepage](https://github.com/virzz/llmapi-rs)
 
-### `super`
+### `superx`
 
 Setuid root shell launcher with platform authentication support
 
 ```bash
-brew install virzz/enyo/super
+brew install virzz/enyo/superx
 ```
 
 [Homepage](https://github.com/virzz/superx)
