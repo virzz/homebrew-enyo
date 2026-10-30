@@ -25,6 +25,6 @@ class Superx < Formula
   end
 
   test do
-    assert_predicate bin/"superx", :exist?
+    assert_path_exists bin/"superx"
   end
 end
