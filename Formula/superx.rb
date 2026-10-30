@@ -1,4 +1,4 @@
-class Super < Formula
+class Superx < Formula
   desc "Setuid root shell launcher with platform authentication support"
   homepage "https://github.com/virzz/superx"
   license "MIT"
