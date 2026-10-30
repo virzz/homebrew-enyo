@@ -30,10 +30,10 @@ formula.gsub!(release_pattern, "\\1#{version}\\2")
   archive = "assets/#{name}-#{platform}.tar.gz"
   digest = Digest::SHA256.file(archive).hexdigest
   url = "https://github.com/#{repository}/releases/download/v#{version}/#{name}-#{platform}.tar.gz"
-  pattern = /(url "#{Regexp.escape(url)}"\s+sha256 ")[0-9a-f]{64}(")/
-  abort "Expected one checksum for #{platform}" unless formula.scan(pattern).length == 1
+  pattern = /(url "#{Regexp.escape(url)}")(?:\s+sha256 "[0-9a-f]{64}")?/
+  abort "Expected one URL for #{platform}" unless formula.scan(pattern).length == 1
 
-  formula.sub!(pattern) { "#{$1}#{digest}#{$2}" }
+  formula.sub!(pattern) { "#{$1}\n    sha256 \"#{digest}\"" }
 end
 
 File.write(path, formula)
